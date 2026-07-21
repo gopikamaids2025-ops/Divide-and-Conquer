@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Min-Max Divide & Conquer Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f9;
+            margin: 30px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0077cc;
+        }
+
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 25px;
+            font-size: 16px;
+            background: #0077cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #005fa3;
+        }
+
+        #output {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 8px rgba(0,0,0,0.2);
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Divide & Conquer Min-Max Algorithm</h1>
+
+<button onclick="runProgram()">Run Analysis</button>
+
+<div id="output"></div>
+
+<script>
+
+let comparisonCount = 0;
+
+// Divide & Conquer
+function minMaxDC(arr, low, high) {
+
+    if (low === high)
+        return {min: arr[low], max: arr[low]};
+
+    if (high === low + 1) {
+        comparisonCount++;
+
+        if (arr[low] < arr[high])
+            return {min: arr[low], max: arr[high]};
+
+        return {min: arr[high], max: arr[low]};
+    }
+
+    let mid = Math.floor((low + high) / 2);
+
+    let left = minMaxDC(arr, low, mid);
+    let right = minMaxDC(arr, mid + 1, high);
+
+    comparisonCount++;
+    let overallMin = (left.min < right.min) ? left.min : right.min;
+
+    comparisonCount++;
+    let overallMax = (left.max > right.max) ? left.max : right.max;
+
+    return {
+        min: overallMin,
+        max: overallMax
+    };
+}
+
+
+// Naive Method
+function minMaxNaive(arr) {
+
+    let mn = arr[0];
+    let mx = arr[0];
+    let comps = 0;
+
+    for(let i=1;i<arr.length;i++){
+
+        comps++;
+        if(arr[i] < mn)
+            mn = arr[i];
+
+        comps++;
+        if(arr[i] > mx)
+            mx = arr[i];
+    }
+
+    return {
+        min: mn,
+        max: mx,
+        comps: comps
+    };
+}
+
+
+// Random Array
+function randomArray(size){
+
+    let arr=[];
+
+    for(let i=0;i<size;i++)
+        arr.push(Math.floor(Math.random()*10000)+1);
+
+    return arr;
+}
+
+
+// Main Program
+function runProgram(){
+
+    let output="";
+
+    let arr=[3,1,7,4,9,2,8,5,6,0];
+
+    comparisonCount=0;
+
+    let result=minMaxDC(arr,0,arr.length-1);
+
+    let dc=comparisonCount;
+
+    let naive=minMaxNaive(arr);
+
+    output+="Sample Array\n";
+    output+="----------------------------\n";
+    output+="Array : "+arr.join(", ")+"\n";
+    output+="Minimum : "+result.min+"\n";
+    output+="Maximum : "+result.max+"\n";
+    output+="Divide & Conquer Comparisons : "+dc+"\n";
+    output+="Naive Comparisons : "+naive.comps+"\n\n";
+
+
+    output+="Performance Analysis\n";
+    output+="=============================================================\n";
+    output+="Size\tDC Comparisons\tNaive\tFormula(3n/2-2)\n";
+    output+="=============================================================\n";
+
+    let sizes=[10,100,1000,10000];
+
+    for(let size of sizes){
+
+        let arr=randomArray(size);
+
+        comparisonCount=0;
+
+        minMaxDC(arr,0,arr.length-1);
+
+        let dcComp=comparisonCount;
+
+        let naive=minMaxNaive(arr).comps;
+
+        let formula=Math.floor((3*size)/2)-2;
+
+        output+=size+"\t"+dcComp+"\t\t"+naive+"\t"+formula+"\n";
+    }
+
+    document.getElementById("output").textContent=output;
+}
+
+</script>
+
+</body>
+</html>
